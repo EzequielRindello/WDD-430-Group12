@@ -8,6 +8,7 @@ Team 12's Group Repo for WDD430 Term 2 2025.
 - Sakhile Mamba
 - Boluwatife Adebiyi Omotoyinbo
 - Aaron Magallanes
+- Ezequiel Rindello
 
 ## Technology
 - Front-End: HTML, CSS, JavaScript, Next.js
