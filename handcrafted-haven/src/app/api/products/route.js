@@ -13,3 +13,22 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(
+  user_id, 
+  title, 
+  price, 
+  category, 
+  description
+) {
+  const sql = "INSERT INTO products (user_id, title, price, category, description) VALUES ($1, $2, $3, $4, $5) RETURNING *"
+  try {
+    const result = await query(sql);
+    if (!result){
+      throw new Error ("Unable to add product")
+    }
+    return NextResponse.json({ message: "Product Added" }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ message: "Error adding Product" }, { status: 500 });
+  }
+}

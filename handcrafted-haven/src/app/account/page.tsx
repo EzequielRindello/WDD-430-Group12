@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "../ui/products-page/loading";
+import ProductsWrapper from "../ui/sellers/products";
 
 type User = {
   user_id: number;
@@ -49,6 +50,13 @@ export default function Page() {
       <h1>Bienvenido, {userData?.username}</h1>
       <p>Correo: {userData?.email}</p>
       <p>Rol: {userData?.role === "seller" ? "Seller" : "Buyer"}</p>
+
+      <div>
+      <h2>Product Management</h2>
+      <ProductsWrapper params={Promise.resolve({ user_id: userData?.user_id.toString() || "" })} />
+      <AddProductForm />
+      </div>
+      
 
       <button
         onClick={() => {
