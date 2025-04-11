@@ -8,6 +8,8 @@ import Loading from "../../ui/products-page/loading";
 import { addProductToCart } from "@/app/ui/cart/actions";
 import { IoChevronBackCircleOutline } from "react-icons/io5";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 interface Product {
   product_id: string;
@@ -28,6 +30,7 @@ interface Review {
 
 export default function ProductDetail() {
   const params = useParams();
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -53,7 +56,19 @@ export default function ProductDetail() {
       .catch((error) => console.error("Error fetching reviews:", error));
   }, [params.id]);
 
-  function addToCart(product: Product) {
+  async function addToCart(product: Product) {
+    const storedIsLogged = localStorage.getItem("isLogged");
+    const storedEmail = localStorage.getItem("userMail");
+
+    if (!storedIsLogged || !storedEmail) {
+      await Swal.fire({
+        icon: "info",
+        title: "Please log in",
+        text: "You need to be logged in to add an item to the cart.",
+      });
+      return;
+    }
+
     try {
       addProductToCart(product);
       console.log("Product added to cart:", product);

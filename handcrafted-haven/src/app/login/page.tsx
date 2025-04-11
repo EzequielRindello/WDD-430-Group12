@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "../ui/login/Login.module.css";
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,6 +26,14 @@ export default function LoginPage() {
     const data = await res.json();
 
     if (res.ok) {
+      await Swal.fire({
+        icon: "success",
+        title: "Login successful",
+        text: "You have successfully logged in!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
       localStorage.setItem("isLogged", "true");
       localStorage.setItem("userMail", email);
       router.push("/account");
