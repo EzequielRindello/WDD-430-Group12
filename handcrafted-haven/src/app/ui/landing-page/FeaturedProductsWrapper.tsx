@@ -4,7 +4,7 @@ import styles from "./FeaturedProducts.module.css";
 export default async function FeaturedProductsWrapper() {
   return (
     <section className={styles.wrapper}>
-      <h2>Featured Products</h2>
+      <h1>Featured Products</h1>
       <div className={styles.container}>
         <FeaturedProductCard
           imageUrl="/images/vases.jpeg"
