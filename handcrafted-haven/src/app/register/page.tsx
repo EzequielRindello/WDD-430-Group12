@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "../ui/login/Login.module.css";
+import Swal from "sweetalert2";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,7 +36,12 @@ export default function RegisterPage() {
     const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem("isLogged", "true");
+      await Swal.fire({
+        icon: "success",
+        title: "Register successful",
+        text: "You have successfully registered your account! Please log in to access your new account.",
+        confirmButtonText: "Go to login",
+      });     
       router.push("/account");
     } else {
       setError(data.message || "Registration failed");
