@@ -6,6 +6,11 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 export default function Header() {
+  const isLogged = JSON.parse(localStorage.getItem('isLogged') || "false")
+  let loginString = 'Login'
+  if (isLogged == 'true'){
+    loginString = 'My account'
+  }
   return (
     <header>
       <nav className={styles.Nav}>
@@ -18,7 +23,7 @@ export default function Header() {
           <NavLink name="Product Listings" href="/products" />
           <NavLink name="My cart" href="/cart" />
           <Link href="/account" className={styles.LoginButton}>
-            Log In
+          {loginString}
           </Link>
         </div>
       </nav>

@@ -2,8 +2,11 @@
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Loading from "../ui/products-page/loading";
-import styles from "../ui/account/Account.module.css";
+import Loading from "@/app/ui/products-page/loading";
+import ProductsWrapper from "@/app/ui/account/products";
+import AddProductForm from "@/app/ui/account/ProductForm";
+import OrdersWrapper from "@/app/ui/account/orders";
+
 
 type User = {
   user_id: number;
@@ -106,23 +109,28 @@ export default function Page() {
   return (
     <div className={styles.wrapper}>
       <h1>Bienvenido, {userData?.username}</h1>
-      <br />
-      <p>
-        Correo: <strong>{userData?.email}</strong>
-      </p>
-      <p>
-        Rol: <strong>{userData?.role === "seller" ? "Seller" : "Buyer"}</strong>
-      </p>
+      <p>Correo: {userData?.email}</p>
+      <p>Rol: {userData?.role === "seller" ? "Seller" : "Buyer"}</p>
 
+      {userData?.role === "seller" && (
+        <div>
+          <h2>Product Management</h2>
+          <ProductsWrapper params={Promise.resolve({ user_id: userData?.user_id.toString() || "" })} />
+          <AddProductForm params={Promise.resolve({ user_id: userData?.user_id?.toString() || "" })} />
+        </div>
+      )}
+      {userData?.role === "seller" && (
+        <div>
+          <h2>Your Purchase History</h2>
+          <OrdersWrapper params={Promise.resolve({ buyer_id: userData?.user_id.toString() || "" })}/>
+        </div>
+      )}
+      
       <div className={styles.buttonsContainer}>
         <button onClick={handleLogout}>Log Out</button>
         <button onClick={handleDelete}>Delete Account</button>
         <br />
       </div>
-      <br />
-      <h1>Your purchases history</h1>
-      <br />
-      <p>Here you can see all your purchases.</p>
     </div>
   );
 }
