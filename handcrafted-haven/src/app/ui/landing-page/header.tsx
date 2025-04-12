@@ -9,7 +9,7 @@ export default function Header() {
   const isLogged = JSON.parse(localStorage.getItem('isLogged') || "false")
   let loginString = 'Login'
   if (isLogged == 'true'){
-    loginString = 'Logout'
+    loginString = 'My account'
   }
   return (
     <header>

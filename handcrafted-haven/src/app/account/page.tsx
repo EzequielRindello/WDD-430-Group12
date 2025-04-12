@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Loading from "../ui/products-page/loading";
-import ProductsWrapper from "../ui/sellers/products";
+import Loading from "@/app/ui/products-page/loading";
+import ProductsWrapper from "@/app/ui/account/products";
+import AddProductForm from "@/app/ui/account/ProductForm";
+import OrdersWrapper from "@/app/ui/account/orders";
 
 type User = {
   user_id: number;
@@ -51,13 +53,20 @@ export default function Page() {
       <p>Correo: {userData?.email}</p>
       <p>Rol: {userData?.role === "seller" ? "Seller" : "Buyer"}</p>
 
-      <div>
-      <h2>Product Management</h2>
-      <ProductsWrapper params={Promise.resolve({ user_id: userData?.user_id.toString() || "" })} />
-      <AddProductForm />
-      </div>
+      {userData?.role === "seller" && (
+        <div>
+          <h2>Product Management</h2>
+          <ProductsWrapper params={Promise.resolve({ user_id: userData?.user_id.toString() || "" })} />
+          <AddProductForm params={Promise.resolve({ user_id: userData?.user_id?.toString() || "" })} />
+        </div>
+      )}
+      {userData?.role === "seller" && (
+        <div>
+          <h2>Your Purchase History</h2>
+          <OrdersWrapper params={Promise.resolve({ buyer_id: userData?.user_id.toString() || "" })}/>
+        </div>
+      )}
       
-
       <button
         onClick={() => {
           localStorage.removeItem("isLogged");
