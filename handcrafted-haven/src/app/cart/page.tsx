@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Loading from "../ui/products-page/loading";
 import { useEffect, useState } from "react";
 import styles from "../ui/cart/CartList.module.css";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const router = useRouter();
@@ -25,6 +26,11 @@ export default function Page() {
     const storedEmail = localStorage.getItem("userMail");
 
     if (!storedIsLogged || !storedEmail) {
+      Swal.fire({
+        icon: "error",
+        title: "Not logged in",
+        text: "You need to log in to access your cart.",
+      });
       router.push("/login");
       return;
     }
@@ -50,7 +56,7 @@ export default function Page() {
         <img
           src="/images/empty-cart.png"
           alt="Empty Cart"
-          className={styles.emptyCartImage} 
+          className={styles.emptyCartImage}
         />
       </div>
     );
@@ -61,7 +67,7 @@ export default function Page() {
       <h1>My Cart</h1>
       <CartList onCartUpdate={fetchTotal} />
       <div>
-        <h3 className={styles.cartTotal}>Total: ${total}</h3>
+        <h3 className={styles.cartTotal}>Total: ${total.toFixed(2)}</h3>
         <button className={styles.deleteCartButton} onClick={deleteList}>
           Delete List
         </button>

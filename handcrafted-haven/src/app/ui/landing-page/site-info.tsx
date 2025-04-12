@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import { CircleHelp, CircleUser, Globe, Lock } from "lucide-react";
 import styles from "./site-info.module.css";
 
@@ -61,15 +60,14 @@ function SiteInfoCard({
   delay: number;
 }) {
   return (
-    <Link
+    <div
       className={styles.card}
-      href="#"
     >
       <div className={styles.icon}>{icon}</div>
       <div className={styles.details}>
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.description}>{description}</p>
       </div>
-    </Link>
+    </div>
   );
 }

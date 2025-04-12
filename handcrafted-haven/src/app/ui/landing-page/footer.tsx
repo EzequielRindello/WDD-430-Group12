@@ -32,12 +32,12 @@ export default function Footer() {
         <div className={styles.navLinks}>
           <div>
             <h4>About</h4>
-            <Link href="/"> Who We Are</Link>
+            <Link href="/about"> Who We Are</Link>
           </div>
           <div>
             <h4>Privacy</h4>
-            <Link href="/">Terms And Conditions</Link>
-            <Link href="/">Support Team</Link>
+            <Link href="/terms">Terms And Conditions</Link>
+            <Link href="/support">Support Team</Link>
           </div>
         </div>
       </div>
