@@ -10,7 +10,7 @@ export default function Header() {
   const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && window.localStorage) {
       const loggedValue = localStorage.getItem("isLogged");
       setIsLogged(loggedValue === "true");
     }
