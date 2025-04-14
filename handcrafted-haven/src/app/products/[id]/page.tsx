@@ -32,6 +32,14 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("userMail");
+    setUserEmail(storedEmail);
+  }, []);
 
   useEffect(() => {
     if (!params.id) return;
@@ -41,24 +49,26 @@ export default function ProductDetail() {
       .then((data) => {
         if (data) {
           setProduct(data);
-          console.log("Product data:", data);
         } else {
           notFound();
         }
       })
       .catch((error) => console.error("Error fetching product:", error));
 
+    fetchReviews();
+  }, [params.id]);
+
+  const fetchReviews = () => {
     fetch(`/api/reviews/${params.id}`)
       .then((res) => res.json())
       .then((data) => setReviews(data))
       .catch((error) => console.error("Error fetching reviews:", error));
-  }, [params.id]);
+  };
 
   async function addToCart(product: Product) {
     const storedIsLogged = localStorage.getItem("isLogged");
-    const storedEmail = localStorage.getItem("userMail");
 
-    if (!storedIsLogged || !storedEmail) {
+    if (!storedIsLogged || !userEmail) {
       await Swal.fire({
         icon: "info",
         title: "Please log in",
@@ -69,7 +79,6 @@ export default function ProductDetail() {
 
     try {
       addProductToCart(product);
-      console.log("Product added to cart:", product);
       setShowPopup(true);
       setTimeout(() => setShowPopup(false), 5000);
     } catch (error) {
@@ -78,6 +87,61 @@ export default function ProductDetail() {
       setTimeout(() => setShowPopup(false), 5000);
     }
   }
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!userEmail) {
+      await Swal.fire({
+        icon: "info",
+        title: "Please log in",
+        text: "You need to be logged in to leave a review.",
+      });
+      return;
+    }
+
+    try {
+      const userRes = await fetch(
+        `/api/login/${encodeURIComponent(userEmail)}`
+      );
+      if (!userRes.ok) throw new Error("User not found");
+      const userData = await userRes.json();
+      const userId = userData.user_id;
+
+      const reviewData = {
+        product_id: product?.product_id,
+        user_id: userId,
+        rating,
+        comment,
+      };
+
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reviewData),
+      });
+
+      if (res.ok) {
+        setRating(5);
+        setComment("");
+        fetchReviews();
+        await Swal.fire({
+          icon: "success",
+          title: "Thank you!",
+          text: "Your review has been submitted.",
+        });
+      } else {
+        throw new Error("Failed to submit review.",userData);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Something went wrong submitting your review.",
+      });
+    }
+  };
 
   if (!product) return <Loading />;
 
@@ -128,12 +192,40 @@ export default function ProductDetail() {
             <li key={index}>
               <p className={styles.reviewRating}>Rating: {review.rating} ⭐</p>
               <p className={styles.reviewComment}>{review.comment}</p>
+              <p style={{ fontStyle: "italic", color: "#555" }}>
+                – {review.username}
+              </p>
             </li>
           ))}
         </ul>
       ) : (
         <Loading />
       )}
+
+      <h1 className={styles.title}>Leave a Review</h1>
+      <form onSubmit={handleSubmitReview} className={styles.contactForm}>
+        <h2>Share your opinion</h2>
+        <label htmlFor="rating">Rating (1 to 5)</label>
+        <input
+          id="rating"
+          type="number"
+          min={1}
+          max={5}
+          value={rating}
+          onChange={(e) => setRating(parseInt(e.target.value))}
+          required
+        />
+
+        <label htmlFor="comment">Comment</label>
+        <textarea
+          id="comment"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          required
+        />
+
+        <button type="submit">Submit Review</button>
+      </form>
     </div>
   );
 }

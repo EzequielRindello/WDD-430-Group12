@@ -6,6 +6,7 @@ import Loading from "@/app/ui/products-page/loading";
 import ProductsWrapper from "@/app/ui/account/products";
 import AddProductForm from "@/app/ui/account/ProductForm";
 import OrdersWrapper from "@/app/ui/account/orders";
+import styles from "../ui/account/Account.module.css";
 
 
 type User = {
@@ -59,7 +60,7 @@ export default function Page() {
     if (confirm.isConfirmed) {
       localStorage.removeItem("isLogged");
       localStorage.removeItem("userMail");
-      router.push("/login");
+      window.location.href = "/login";
     }
   };
 
