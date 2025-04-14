@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link"
 import { fetchProductList } from "@/app/ui/sellers/actions";
 import { useRouter } from "next/router";
 
@@ -13,37 +12,36 @@ interface Product {
   images: [string];
 }
 
-export default async function ProductsWrapper(props: { params: Promise<{ user_id: string }> }) {
+export default async function ProductsWrapper(props: {
+  params: Promise<{ user_id: string }>;
+}) {
+  const params = await props.params;
+  const id = params.user_id;
 
-    const params =  await props.params;
-    const id = params.user_id;
-    
-    const allProductsList = await fetchProductList();
-    console.log(allProductsList)
-    const userProductsList: Product[] = [];
-    allProductsList.forEach((product: Product) => {
-        if(product.user_id == id){
-            userProductsList.push(product)
-        }
-    });
-    console.log (userProductsList)
+  const allProductsList = await fetchProductList();
+  console.log(allProductsList);
+  const userProductsList: Product[] = [];
+  allProductsList.forEach((product: Product) => {
+    if (product.user_id == id) {
+      userProductsList.push(product);
+    }
+  });
+  console.log(userProductsList);
 
-    return (
-        <>
-        {userProductsList?.map((product) => {
-            return <Product key={product.product_id} product={product} />;
-        })}
-        </>
-    );
+  return (
+    <>
+      {userProductsList?.map((product) => {
+        return <Product key={product.product_id} product={product} />;
+      })}
+    </>
+  );
 }
 
 export function Product({ product }: { product: Product }) {
   const imageAlt = `${product.description}`;
   const router = useRouter();
 
-  const handleDelete = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       const res = await fetch("/api/products", {
@@ -66,12 +64,7 @@ export function Product({ product }: { product: Product }) {
 
   return (
     <div>
-      <Image
-        src={product.images[0]}
-        alt={imageAlt}
-        height={400}
-        width={200}
-      />
+      <Image src={product.images[0]} alt={imageAlt} height={400} width={200} />
       <h2>{product.title}</h2>
       <p>Price: {product.price}</p>
       <p>Category: {product.category}</p>
@@ -80,7 +73,3 @@ export function Product({ product }: { product: Product }) {
     </div>
   );
 }
-function useState(arg0: string): [any, any] {
-    throw new Error("Function not implemented.");
-}
-
