@@ -4,13 +4,20 @@ import Link from "next/link";
 import styles from "./Header_Footer.module.css";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { useEffect, useState } from "react";
 
 export default function Header() {
-  const isLogged = JSON.parse(localStorage.getItem('isLogged') || "false")
-  let loginString = 'Login'
-  if (isLogged == 'true'){
-    loginString = 'My account'
-  }
+  const [isLogged, setIsLogged] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const loggedValue = localStorage.getItem("isLogged");
+      setIsLogged(loggedValue === "true");
+    }
+  }, []);
+
+  const loginString = isLogged ? "My account" : "Login";
+
   return (
     <header>
       <nav className={styles.Nav}>
@@ -23,7 +30,7 @@ export default function Header() {
           <NavLink name="Product Listings" href="/products" />
           <NavLink name="My cart" href="/cart" />
           <Link href="/account" className={styles.LoginButton}>
-          {loginString}
+            {loginString}
           </Link>
         </div>
       </nav>

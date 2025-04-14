@@ -36,7 +36,7 @@ export default function LoginPage() {
 
       localStorage.setItem("isLogged", "true");
       localStorage.setItem("userMail", email);
-      router.push("/account");
+      window.location.href = "/account";
     } else {
       setError(data.message || "Login failed");
     }
