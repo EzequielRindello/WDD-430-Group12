@@ -1,75 +1,76 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { fetchProductList } from "@/app/ui/sellers/actions";
-import { useRouter } from "next/router";
 
 interface Product {
-  product_id: string;
-  user_id: string;
+  product_id: number;
+  user_id: number;
   title: string;
   description: string;
   price: number;
   category: string;
-  images: [string];
+  images: string[];
 }
 
-export default async function ProductsWrapper(props: {
-  params: Promise<{ user_id: string }>;
-}) {
-  const params = await props.params;
-  const id = params.user_id;
-
-  const allProductsList = await fetchProductList();
-  console.log(allProductsList);
-  const userProductsList: Product[] = [];
-  allProductsList.forEach((product: Product) => {
-    if (product.user_id == id) {
-      userProductsList.push(product);
-    }
-  });
-  console.log(userProductsList);
-
-  return (
-    <>
-      {userProductsList?.map((product) => {
-        return <Product key={product.product_id} product={product} />;
-      })}
-    </>
-  );
+interface ProductsWrapperProps {
+  user_id: number;
 }
 
-export function Product({ product }: { product: Product }) {
-  const imageAlt = `${product.description}`;
-  const router = useRouter();
+export default function ProductsWrapper({ user_id }: ProductsWrapperProps) {
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product_id: product.product_id }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        router.push("/account");
-      } else {
-        throw new Error(data.message || "Failed to delete product");
+  useEffect(() => {
+    const fetchUserProducts = async () => {
+      try {
+        const res = await fetch("/api/products");
+        if (!res.ok) throw new Error("Failed to fetch products");
+        const allProducts: Product[] = await res.json();
+        const userProducts = allProducts.filter(
+          (product) => product.user_id === user_id
+        );
+        setProducts(userProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
       }
+    };
+
+    fetchUserProducts();
+  }, [user_id]);
+
+  const handleDelete = async (product_id: number) => {
+    try {
+      const res = await fetch(`/api/products/${product_id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete product");
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.product_id !== product_id)
+      );
     } catch (error) {
-      console.error(error);
+      console.error("Error deleting product:", error);
     }
   };
 
   return (
-    <div>
-      <Image src={product.images[0]} alt={imageAlt} height={400} width={200} />
-      <h2>{product.title}</h2>
-      <p>Price: {product.price}</p>
-      <p>Category: {product.category}</p>
-      <p>Description: {product.description}</p>
-      <button onClick={handleDelete}>Delete Product</button>
-    </div>
+    <>
+      {products.map((product) => (
+        <div key={product.product_id}>
+          <Image
+            src={product.images[0]}
+            alt={product.description}
+            width={200}
+            height={400}
+          />
+          <h2>{product.title}</h2>
+          <p>Price: {product.price}</p>
+          <p>Category: {product.category}</p>
+          <p>Description: {product.description}</p>
+          <button onClick={() => handleDelete(product.product_id)}>
+            Delete Product
+          </button>
+        </div>
+      ))}
+    </>
   );
 }

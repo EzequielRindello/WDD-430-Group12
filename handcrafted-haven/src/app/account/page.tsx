@@ -120,17 +120,13 @@ export default function Page() {
 
       {userData?.role === "seller" && (
         <div>
+          <br />
+          <br />
           <h2>Product Management</h2>
-          <ProductsWrapper
-            params={Promise.resolve({
-              user_id: userData?.user_id.toString() || "",
-            })}
-          />
-          <AddProductForm
-            params={Promise.resolve({
-              user_id: userData?.user_id?.toString() || "",
-            })}
-          />
+          <br />
+          <br />
+          <ProductsWrapper user_id={userData?.user_id || 0} />
+          <AddProductForm user_id={userData?.user_id || 0} />
         </div>
       )}
       {userData?.role === "buyer" && (
