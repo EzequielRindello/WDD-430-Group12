@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import styles from "./Products.module.css";
 
 interface Product {
   product_id: number;
@@ -53,24 +54,29 @@ export default function ProductsWrapper({ user_id }: ProductsWrapperProps) {
   };
 
   return (
-    <>
-      {products.map((product) => (
-        <div key={product.product_id}>
-          <Image
-            src={product.images[0]}
-            alt={product.description}
-            width={200}
-            height={400}
-          />
-          <h2>{product.title}</h2>
-          <p>Price: {product.price}</p>
-          <p>Category: {product.category}</p>
-          <p>Description: {product.description}</p>
-          <button onClick={() => handleDelete(product.product_id)}>
-            Delete Product
-          </button>
-        </div>
-      ))}
-    </>
+    <div className={styles.gallery}>
+      {products.length === 0 ? (
+        <p className={styles.noProducts}>You have no published products.</p>
+      ) : (
+        products.map((product) => (
+          <div key={product.product_id} className={styles.card}>
+            <Image
+              src={product.images[0]}
+              alt={product.description}
+              width={200}
+              height={400}
+              className={styles.image}
+            />
+            <h2 className={styles.title}>{product.title}</h2>
+            <button
+              className={styles.button}
+              onClick={() => handleDelete(product.product_id)}
+            >
+              Delete Product
+            </button>
+          </div>
+        ))
+      )}
+    </div>
   );
 }
