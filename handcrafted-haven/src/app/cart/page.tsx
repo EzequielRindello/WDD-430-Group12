@@ -42,9 +42,46 @@ export default function Page() {
     fetchTotal();
   }, [router]);
 
-  const deleteList = () => {
-    localStorage.setItem("haven-cart", JSON.stringify([]));
-    setTotal(0);
+  const deleteList = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will delete all items in your cart.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      localStorage.setItem("haven-cart", JSON.stringify([]));
+      setTotal(0);
+      Swal.fire("Deleted!", "Your cart has been emptied.", "success");
+    }
+  };
+
+  const confirmPurchase = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will create a ticket in the database to process your purchase.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, confirm purchase!",
+    });
+
+    if (result.isConfirmed) {
+      //logic to create purchase on the db
+
+      localStorage.setItem("haven-cart", JSON.stringify([]));
+      setTotal(0);
+      Swal.fire(
+        "Done!",
+        "Your purchase has been created. Please check your email for the next steps! Your cart has been cleared. Please check your account to see the details of your purchase.",
+        "success"
+      );
+    }
   };
 
   if (!isClient || !isLogged) return <Loading />;
@@ -68,9 +105,10 @@ export default function Page() {
       <CartList onCartUpdate={fetchTotal} />
       <div>
         <h3 className={styles.cartTotal}>Total: ${total.toFixed(2)}</h3>
-        <button className={styles.deleteCartButton} onClick={deleteList}>
-          Delete List
-        </button>
+        <div className={styles.buttonsContainer}>
+          <button onClick={deleteList}>Delete List</button>
+          <button onClick={confirmPurchase}>Confirm Purchase</button>
+        </div>
       </div>
     </div>
   );
