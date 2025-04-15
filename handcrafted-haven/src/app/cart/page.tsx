@@ -61,6 +61,7 @@ export default function Page() {
   };
 
   const confirmPurchase = async () => {
+
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "This will create a ticket in the database to process your purchase.",
@@ -71,16 +72,31 @@ export default function Page() {
       confirmButtonText: "Yes, confirm purchase!",
     });
 
-    if (result.isConfirmed) {
-      //logic to create purchase on the db
+    if (result.isConfirmed && email) {
+      const cart = JSON.parse(localStorage.getItem("haven-cart") || "[]");
 
-      localStorage.setItem("haven-cart", JSON.stringify([]));
-      setTotal(0);
-      Swal.fire(
-        "Done!",
-        "Your purchase has been created. Please check your email for the next steps! Your cart has been cleared. Please check your account to see the details of your purchase.",
-        "success"
-      );
+      console.log(cart);
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, cart }),
+      });
+
+      if (res.ok) {
+        localStorage.setItem("haven-cart", JSON.stringify([]));
+        setTotal(0);
+        Swal.fire(
+          "Done!",
+          "Your purchase has been created. Please check your email for the next steps!",
+          "success"
+        );
+      } else {
+        const data = await res.json();
+        Swal.fire("Error", data.error || "Something went wrong", "error");
+      }
     }
   };
 
