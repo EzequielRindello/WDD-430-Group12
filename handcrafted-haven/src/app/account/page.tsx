@@ -8,7 +8,6 @@ import AddProductForm from "@/app/ui/account/ProductForm";
 import OrdersWrapper from "@/app/ui/account/orders";
 import styles from "../ui/account/Account.module.css";
 
-
 type User = {
   user_id: number;
   username: string;
@@ -113,25 +112,40 @@ export default function Page() {
       <p>Correo: {userData?.email}</p>
       <p>Rol: {userData?.role === "seller" ? "Seller" : "Buyer"}</p>
 
-      {userData?.role === "seller" && (
-        <div>
-          <h2>Product Management</h2>
-          <ProductsWrapper params={Promise.resolve({ user_id: userData?.user_id.toString() || "" })} />
-          <AddProductForm params={Promise.resolve({ user_id: userData?.user_id?.toString() || "" })} />
-        </div>
-      )}
-      {userData?.role === "seller" && (
-        <div>
-          <h2>Your Purchase History</h2>
-          <OrdersWrapper params={Promise.resolve({ buyer_id: userData?.user_id.toString() || "" })}/>
-        </div>
-      )}
-      
       <div className={styles.buttonsContainer}>
         <button onClick={handleLogout}>Log Out</button>
         <button onClick={handleDelete}>Delete Account</button>
         <br />
       </div>
+
+      {userData?.role === "seller" && (
+        <div>
+          <h2>Product Management</h2>
+          <ProductsWrapper
+            params={Promise.resolve({
+              user_id: userData?.user_id.toString() || "",
+            })}
+          />
+          <AddProductForm
+            params={Promise.resolve({
+              user_id: userData?.user_id?.toString() || "",
+            })}
+          />
+        </div>
+      )}
+      {userData?.role === "buyer" && (
+        <div>
+          <br />
+          <br />
+          <br />
+          <h2>Your Purchase History</h2>
+          <OrdersWrapper
+            params={{
+              buyer_id: userData?.user_id || 0,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
