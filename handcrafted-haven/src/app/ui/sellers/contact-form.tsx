@@ -1,10 +1,8 @@
 "use client";
 import styles from "@/app/ui/sellers/sellers.module.css";
 import Swal from "sweetalert2";
-import { useRouter } from "next/navigation";
 
 export default function ContactForm() {
-  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
